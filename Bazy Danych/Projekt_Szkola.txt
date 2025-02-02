@@ -1,0 +1,334 @@
+CREATE DATABASE [PROJEKTSZKOLA];
+
+USE [PROJEKTSZKOLA];
+
+-- TABELE
+
+-- OGRANICZENIE TABELI : uczen
+-- 1) Ograniczenie Primary Key 'id_uczen' - jako klucz g³ówny zapewnia unikalnoœæ ka¿dego u¿ytkownika.
+-- Dodatkowo posiada element 'identity', dziêki któremu identyfikator uzupe³nia siê automatycznie.
+-- 2) Ograniczenie Foreign Key 'id_klasa' - zapewnia integralnoœæ referencyjn¹ miêdzy tabelami. 
+-- Umo¿liwia powi¹zanie danych w jednej tabeli z danymi w innej tabeli.
+-- 3) Ograniczenie Not Null - wymusza, aby kolumna nie mog³a zawieraæ wartoœci NULL.
+
+CREATE TABLE uczen(
+	id_uczen int primary key identity(1,1),
+	imie varchar(30) NOT NULL,
+	nazwisko varchar(30) NOT NULL,
+	data_urodzenia date NOT NULL,
+	adres varchar(30) NOT NULL,
+	plec char,
+	id_ocena int,
+	id_klasa int
+);
+
+-- OGRANICZENIE TABELI : klasa
+-- 1) Ograniczenie Primary Key 'id_klasa' - jako klucz g³ówny zapewnia unikalnoœæ ka¿dego u¿ytkownika.
+-- Dodatkowo posiada element 'identity', dziêki któremu identyfikator uzupe³nia siê automatycznie.
+-- 2) Ograniczenie Foreign Key 'id_wychowawca' - zapewnia integralnoœæ referencyjn¹ miêdzy tabelami. 
+-- Umo¿liwia powi¹zanie danych w jednej tabeli z danymi w innej tabeli.
+-- 3) Ograniczenie Not Null - wymusza, aby kolumna nie mog³a zawieraæ wartoœci NULL.
+
+CREATE TABLE klasa(
+	id_klasa int primary key identity(1,1),
+	nazwa_klasy varchar(30) NOT NULL,
+	liczebnosc_klasy int NOT NULL,
+	rok_szkolny date NOT NULL,
+	id_wychowawca int
+);
+
+-- OGRANICZENIE TABELI : nauczyciel
+-- 1) Ograniczenie Primary Key 'id_nauczyciel' - jako klucz g³ówny zapewnia unikalnoœæ ka¿dego u¿ytkownika.
+-- Dodatkowo posiada element 'identity', dziêki któremu identyfikator uzupe³nia siê automatycznie.
+-- 2) Ograniczenie Not Null - wymusza, aby kolumna nie mog³a zawieraæ wartoœci NULL.
+
+CREATE TABLE nauczyciel(
+	id_nauczyciel int primary key identity(1,1),
+	imie varchar(30) NOT NULL,
+	nazwisko varchar(30) NOT NULL,
+	przedmiot varchar(30) NOT NULL,
+	pensja decimal(10,2) NOT NULL,
+	plec char
+);
+
+-- OGRANICZENIE TABELI : przedmiot
+-- 1) Ograniczenie Primary Key 'id_przedmiot' - jako klucz g³ówny zapewnia unikalnoœæ ka¿dego u¿ytkownika.
+-- Dodatkowo posiada element 'identity', dziêki któremu identyfikator uzupe³nia siê automatycznie.
+-- 2) Ograniczenie Not Null - wymusza, aby kolumna nie mog³a zawieraæ wartoœci NULL.
+
+CREATE TABLE przedmiot(
+	id_przedmiot int primary key identity(1,1),
+	nazwa_przedmiotu varchar(30) NOT NULL,
+	opis_przedmiotu text NOT NULL
+);
+
+-- OGRANICZENIE TABELI : plan_zajec
+-- 1) Ograniczenie Primary Key 'id_plan' - jako klucz g³ówny zapewnia unikalnoœæ ka¿dego u¿ytkownika.
+-- Dodatkowo posiada element 'identity', dziêki któremu identyfikator uzupe³nia siê automatycznie.
+-- 2) Ograniczenie Foreign Key 'id_klasa'/'id_przedmiot'/'id_nauczyciel' - zapewnia integralnoœæ referencyjn¹ miêdzy tabelami. 
+-- Umo¿liwia powi¹zanie danych w jednej tabeli z danymi w innej tabeli.
+-- 3) Ograniczenie Not Null - wymusza, aby kolumna nie mog³a zawieraæ wartoœci NULL.
+
+CREATE TABLE plan_zajec(
+	id_plan int primary key identity(1,1),
+	dzien_tygodnia varchar(20) NOT NULL,
+	godziny_zajec text NOT NULL,
+	sala varchar(10) NOT NULL,
+	id_klasa int,
+	id_przedmiot int,
+	id_nauczyciel int
+);
+
+-- OGRANICZENIE TABELI : ocena
+-- 1) Ograniczenie Primary Key 'id_ocena' - jako klucz g³ówny zapewnia unikalnoœæ ka¿dego u¿ytkownika.
+-- Dodatkowo posiada element 'identity', dziêki któremu identyfikator uzupe³nia siê automatycznie.
+-- 2) Ograniczenie Foreign Key 'id_uczen'/'id_przedmiot' - zapewnia integralnoœæ referencyjn¹ miêdzy tabelami. 
+-- Umo¿liwia powi¹zanie danych w jednej tabeli z danymi w innej tabeli.
+-- 3) Ograniczenie Not Null - wymusza, aby kolumna nie mog³a zawieraæ wartoœci NULL.
+
+CREATE TABLE ocena(
+	id_ocena int primary key identity(1,1),
+	ocena float,
+	opis text NOT NULL,
+	id_uczen int,
+	id_przedmiot int
+);
+
+-- OGRANICZENIE TABELI : rodzic
+-- 1) Ograniczenie Primary Key 'id_rodzic' - jako klucz g³ówny zapewnia unikalnoœæ ka¿dego u¿ytkownika.
+-- Dodatkowo posiada element 'identity', dziêki któremu identyfikator uzupe³nia siê automatycznie.
+-- 3) Ograniczenie Not Null - wymusza, aby kolumna nie mog³a zawieraæ wartoœci NULL.
+
+CREATE TABLE rodzic(
+	id_rodzic int primary key identity(1,1),
+	imie varchar(30) NOT NULL,
+	nazwisko varchar(30) NOT NULL,
+	plec char,
+	telefon varchar(12) NOT NULL
+);
+
+
+-- OGRANICZENIE TABELI : powiazania_uczen_rodzic
+-- 1) Ograniczenie Primary Key 'id_uczen' - jako klucz g³ówny zapewnia unikalnoœæ ka¿dego u¿ytkownika.
+-- Dodatkowo posiada element 'identity', dziêki któremu identyfikator uzupe³nia siê automatycznie.
+-- 2) Ograniczenie Foreign Key 'id_rodzic' - zapewnia integralnoœæ referencyjn¹ miêdzy tabelami. 
+-- Umo¿liwia powi¹zanie danych w jednej tabeli z danymi w innej tabeli.
+-- 3) Ograniczenie Not Null - wymusza, aby kolumna nie mog³a zawieraæ wartoœci NULL.
+
+CREATE TABLE powiazania_uczen_rodzic(
+	id_uczen int,
+	id_rodzic int,
+	relacja text NOT NULL
+);
+
+-- RELACJE (KLUCZE OBCE)
+
+ALTER TABLE uczen
+ADD FOREIGN KEY (id_klasa) 
+REFERENCES klasa(id_klasa);
+
+ALTER TABLE uczen
+ADD FOREIGN KEY (id_ocena) 
+REFERENCES ocena(id_ocena);
+
+ALTER TABLE klasa
+ADD FOREIGN KEY (id_wychowawca) 
+REFERENCES nauczyciel(id_nauczyciel);
+
+ALTER TABLE plan_zajec
+ADD FOREIGN KEY (id_klasa) 
+REFERENCES klasa(id_klasa);
+
+ALTER TABLE plan_zajec
+ADD FOREIGN KEY (id_przedmiot) 
+REFERENCES przedmiot(id_przedmiot);
+
+ALTER TABLE plan_zajec
+ADD FOREIGN KEY (id_nauczyciel) 
+REFERENCES nauczyciel(id_nauczyciel);
+
+ALTER TABLE ocena
+ADD FOREIGN KEY (id_uczen) 
+REFERENCES uczen(id_uczen);
+
+ALTER TABLE ocena
+ADD FOREIGN KEY (id_przedmiot) 
+REFERENCES przedmiot(id_przedmiot);
+
+ALTER TABLE powiazania_uczen_rodzic
+ADD FOREIGN KEY (id_uczen) 
+REFERENCES uczen(id_uczen);
+
+ALTER TABLE powiazania_uczen_rodzic
+ADD FOREIGN KEY (id_rodzic) 
+REFERENCES rodzic(id_rodzic);
+
+-- DODAWANIE DANYCH
+
+INSERT INTO przedmiot VALUES 
+('chemia','lekcja ucz¹ca podstaw chemii i zagadnieñ odnoœnie tego przdmiotu'),
+('muzuka','lekcja polegaj¹ca na nauce grania na instrumentach, poszerzaniu pasjii oraz nauki odnoœne muzyki'),
+('polski','nauka jezyka polskiego, podstaw, gramatyki oraz komunikacji'),
+('angielski','nauka jezyka angielskiego, podstaw, gramatyki oraz komunikacji'),
+('matematyka','nauka liczenia, dzia³añ i logicznego myœlenia'),
+('biologia','nauka o naturze,cz³owieku i œwiecie'),
+('plastyka','lekcja polegaj¹ca na nauce o sztuce i udoskalaniu kureaywnoœci'),
+('informatyka','lekcja s³u¿¹ca do poznawania dzia³ania komutera i poprawnego korzystania z jego us³ug'),
+('geografia','nauka o poznawaniu budowy ziemi oraz poznawaniu œwiata'),
+('wychowanie fizyczne','lekcja polegaj¹ca na æwiczeniach fizycznych');
+
+INSERT INTO ocena (ocena,opis) VALUES
+(1.0,'Niedostateczny'),
+(2.0,'Niedostateczny'),
+(2.5,'Dostateczny minus'),
+(3.0,'Dostateczny'),
+(3.5,'Dobry plus'),
+(4.0,'Dobry'),
+(4.5,'Bardzo dobry plus'),
+(5.0,'Bardzo dobry'),
+(0.0,'-'),
+(0.5,'+');
+
+INSERT INTO uczen (imie,nazwisko,data_urodzenia,adres,plec,id_ocena) VALUES
+('Adam','Mickiewicz','1798-12-24','Nowogród','M',5),
+('Juliusz','S³owacki','1809-09-04','Krzakówka','M',3),
+('Jan','Kochanowski','1530','Sycyn','M',7),
+('Henryk','Sienkiewicz','1846-05-05','Wola Okrzejska','M',7),
+('Fryderyk','Nietzsche','1844-10-15','Röcken','M',4),
+('George','Orwell','1903-06-25','Motihari','M',8),
+('William','Shakespeare','1564-04-23','Stratford-upon-Avon','M',2),
+('Boles³aw','Prus','1847-08-20','Hrubieszów','M',3),
+('Stanis³aw','Wyspiañski','1869-01-15','Kraków','M',1),
+('Wis³awa','Szymborska','1923-07-02','Kórnik','K',1);
+
+INSERT INTO nauczyciel VALUES
+('Freddie','Mercury','Muzyka',500000.50,'M'),
+('Brian','May','Muzyka',500000.50,'M'),
+('Roger','Taylor','Muzyka',500000.50,'M'),
+('John','Deacon','Muzyka',500000.50,'M'),
+('Michael','Jackson','Muzyka',500000.50,'M'),
+('Samantha','Fox','Muzyka',500000.50,'K'),
+('Gloria','Gaynor','Muzyka',500000.50,'K'),
+('Eric','Carmen','Muzyka',500000.50,'M'),
+('Bonnie','Tyler','Muzyka',500000.50,'K'),
+('Bon','Jovi','Muzyka',500000.50,'M');
+
+INSERT INTO rodzic VALUES
+('Maria','Sk³odowska-Curie','K','+33123456789'),
+('Miko³aj','Kopernik','M','+48956345876'),
+('Ignacy','£ukasiewicz','M','+48847562345'),
+('Andrzej Frycz','Modrzewski','M','+48098765432'),
+('Stefan','Banach','M','+4812345678'),
+('Kazimierz','Funk','M','+48097643267'),
+('Janusz','Korczak','M','+48094567543'),
+('Jerzy','Grotowski','M','+48099084534'),
+('Tadeusz','Koœciuszko','M','+48098712345'),
+('W³adys³aw','Reymont','M','+48864345456');
+
+INSERT INTO klasa (nazwa_klasy,liczebnosc_klasy,rok_szkolny) VALUES
+('1PP',31,'2019'),
+('2PP',22,'2020'),
+('3PP',22,'2021'),
+('4PP',22,'2022'),
+('5PP',22,'2023'),
+('1PD',29,'2019'),
+('2PD',21,'2020'),
+('3PD',20,'2021'),
+('4PD',20,'2022'),
+('5PD',20,'2023');
+
+INSERT INTO plan_zajec (dzien_tygodnia,godziny_zajec,sala) VALUES 
+('Poniedzia³ek','8.00 - 14.15',50),
+('Wtorek','9.00 - 15.05',49),
+('Œroda','10.00 - 13.25',52),
+('Czwartek','11.00 - 12.30',50),
+('Pi¹tek','8.00 - 13.25',49),
+('Poniedzia³ek','9.15 - 11.15',50),
+('Wtorek','11.30 - 15.05',49),
+('Œroda','8.00 - 13.25',52),
+('Czwartek','12.00 - 15.05',50),
+('Pi¹tek','8.00 - 13.25',49);
+
+INSERT INTO powiazania_uczen_rodzic (relacja) VALUES
+('Opiekun prawny'),('Opiekun prawny'),('Opiekun prawny'),
+('Opiekun prawny'),('Opiekun prawny'),('Opiekun prawny'),
+('Opiekun prawny'),('Opiekun prawny'),('Opiekun prawny'),
+('Opiekun prawny');
+
+-- PROCEDURY DODAWANIA, AKTUALIZOWANIA, USUWANIA DANYCH
+
+CREATE PROCEDURE dodaj_ucznia
+    @imie_ucznia varchar(30),
+    @nazwisko_ucznia varchar(30),
+    @data_urodzenia_ucznia date,
+	@adres_ucznia varchar(30)
+AS
+BEGIN
+    INSERT INTO uczen (imie, nazwisko, data_urodzenia,adres)
+    VALUES (@imie_ucznia, @nazwisko_ucznia, @data_urodzenia_ucznia,@adres_ucznia);
+END;
+
+EXEC dodaj_ucznia 'Fryderyk','Szopen','1810-03-01','¯elazowa Wola';
+EXEC dodaj_ucznia 'Julian','Tuwim','1894-09-13','£ódŸ';
+
+CREATE TRIGGER aktualizowanie_liczebnosci_klasy
+ON uczen
+AFTER INSERT
+AS
+BEGIN
+    UPDATE klasa
+    SET liczebnosc_klasy = liczebnosc_klasy + 1
+    WHERE id_klasa IN (SELECT id_klasa FROM inserted);
+END;
+
+CREATE PROCEDURE edytuj_dane_nauczyciela
+    @id_nauczyciel int,
+    @imie varchar(30),
+    @nazwisko varchar(30),
+    @przedmiot varchar(30),
+	@pensja decimal(10,2),
+	@plec char
+AS
+BEGIN
+    UPDATE nauczyciel
+    SET imie = @imie,
+        nazwisko = @nazwisko,
+        przedmiot = @przedmiot,
+		pensja = @pensja,
+		plec = @plec
+    WHERE id_nauczyciel = @id_nauczyciel;
+END;
+
+EXEC edytuj_dane_nauczyciela 2,'Maggie','Reilly','biologia','53.000000','K';
+EXEC edytuj_dane_nauczyciela 6,'Eric','Carmen','matematyka','65.0000','M';
+
+CREATE PROCEDURE usun_ocene_ucznia
+    @id_ocena int
+AS
+BEGIN
+    DELETE FROM uczen
+    WHERE id_ocena = @id_ocena;
+END;
+
+EXEC usun_ocene_ucznia 5;
+EXEC usun_ocene_ucznia 7;
+
+-- WIDOKI
+
+CREATE VIEW widok_nauczyciele_muzyki AS
+SELECT imie,nazwisko
+FROM nauczyciel
+WHERE przedmiot = 'muzyka';
+
+CREATE VIEW widok_przedmioty_w_szkole AS
+SELECT nazwa_przedmiotu,opis_przedmiotu
+FROM przedmiot;
+
+CREATE VIEW widok_uczniowie_dziewczyny AS
+SELECT imie,nazwisko
+FROM uczen
+WHERE plec = 'K';
+
+CREATE VIEW lista_ocen AS
+SELECT ocena,opis
+FROM ocena;
